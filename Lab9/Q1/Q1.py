@@ -18,8 +18,10 @@ def gauss_kernel(a,b):
     return: numpy.ndarray shape = ?
     '''
     sigma = kernel_params['sigma_gauss']
-    ######START: TO CODE########
-    out = np.ndarray(0)
+    ######START: TO CODE######## 
+    norm = np.square(np.linalg.norm(a, axis=1,keepdims=True)) +  np.square(np.linalg.norm(b.T, axis=0,keepdims=True)) - 2 * np.dot(a,b.T)
+    norm[abs(norm)<1e-8] = 0
+    out = np.exp(-norm/(2*sigma**2)) 
     return out
     ######END: TO CODE########
 
@@ -35,7 +37,9 @@ def rbf_kernel(a,b):
     '''
     gamma = kernel_params['gamma_rbf']
     ######START: TO CODE########
-    out = np.ndarray(0)
+    norm = np.square(np.linalg.norm(a, axis=1,keepdims=True)) +  np.square(np.linalg.norm(b.T, axis=0,keepdims=True)) - 2 * np.dot(a,b.T)
+    norm[abs(norm)<1e-8] = 0
+    out = np.exp(-norm*gamma) 
     return out
     ######END: TO CODE########
 
@@ -51,7 +55,9 @@ def laplace_kernel(a,b):
     '''
     sigma = kernel_params['sigma_laplace']
     ######START: TO CODE########
-    out = np.ndarray(0)
+    norm = np.square(np.linalg.norm(a, axis=1,keepdims=True)) +  np.square(np.linalg.norm(b.T, axis=0,keepdims=True)) - 2 * np.dot(a,b.T)
+    norm[abs(norm)<1e-8] = 0
+    out = np.exp(-np.sqrt(norm)/sigma)
     return out
     ######END: TO CODE########
         
@@ -63,9 +69,9 @@ def q1():
     # The tunable hyperparmeters for the 3 kernels - all initialized to 1
     # Change values to the optimal values for dataset 1
     ######START: TO DO########
-    kernel_params = {'sigma_gauss':1,
-                    'gamma_rbf':1,
-                    'sigma_laplace':1}
+    kernel_params = {'sigma_gauss':2,
+                    'gamma_rbf':0.2,
+                    'sigma_laplace': 20}
     ######END: TO DO########
     
     reg1 = SVM_Regression(kernel=gauss_kernel)
@@ -78,7 +84,7 @@ def q1():
     print("RBF Kernel Score: ",reg2.get_score(X_test,y_test)) #Higher score = better fit
     reg2.plot(X_train,y_train)
     
-    reg3 = SVM_Regression(kernel=rbf_kernel)
+    reg3 = SVM_Regression(kernel=laplace_kernel)
     reg3.train(X_train,y_train)
     print("Laplacian RBF Kernel Score: ",reg3.get_score(X_test,y_test)) #Higher score = better fit
     reg3.plot(X_train,y_train)
@@ -89,9 +95,9 @@ def q1():
     # The tunable hyperparmeters for the 3 kernels - all initialized to 1
     # Change values to the optimal values for dataset 2
     ######START: TO DO########
-    kernel_params = {'sigma_gauss':1,
-                    'gamma_rbf':1,
-                    'sigma_laplace':1}
+    kernel_params = {'sigma_gauss':2,
+                    'gamma_rbf':0.1,
+                    'sigma_laplace':7}
     ######END: TO DO########
     
     reg1 = SVM_Regression(kernel=gauss_kernel)
